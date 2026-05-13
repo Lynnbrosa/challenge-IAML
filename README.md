@@ -17,10 +17,27 @@ PrevioPLS-ML/
 ├── relatorio_executivo.md          ← resumo de negócio (1 página)
 ├── previoPLS_ml.ipynb              ← entrega principal (76 células)
 ├── data/
-│   └── Online Retail.xlsx
+│   ├── Online Retail.xlsx          ← proxy do notebook
+│   └── vin_share_Desafio_02.xlsx   ← Ford real (NÃO commitada, ver .gitignore)
+├── output/
+│   └── V3__seed_real_data.sql      ← seed gerado pelo build_seed.py (vai pro repo SOA)
 └── scripts/
-    └── build_notebook.py           ← gerador do .ipynb
+    ├── build_notebook.py           ← gerador do .ipynb
+    └── build_seed.py               ← gerador do seed do backend SOA (criptografa PII)
 ```
+
+## Duas planilhas, dois papéis
+
+| Planilha                      | Usada por           | O que faz                                                         |
+|-------------------------------|---------------------|--------------------------------------------------------------------|
+| `Online Retail.xlsx`          | `previoPLS_ml.ipynb` | Proxy metodológico do dataset Ford sintético. Segmentação RFM + classificação D0. |
+| `vin_share_Desafio_02.xlsx`   | `scripts/build_seed.py` | Planilha Ford real (82MB — NÃO no repo). Gera o seed do banco do backend Java SOA. |
+
+A planilha Ford (`vin_share_Desafio_02.xlsx`) **não é commitada** porque excede o limite recomendado do GitHub (50MB de warning, 100MB de bloqueio). Para regenerar o seed:
+
+1. Baixar a `vin_share_Desafio_02.xlsx` do canal oficial do challenge (Teams / professor).
+2. Colocar em `data/vin_share_Desafio_02.xlsx`.
+3. Rodar `python scripts/build_seed.py` (ver seção abaixo).
 
 ## Como rodar
 
@@ -73,6 +90,28 @@ python scripts/build_notebook.py
 ```
 
 Isso regenera o `previoPLS_ml.ipynb` from scratch.
+
+## Regenerar o seed do backend SOA
+
+`scripts/build_seed.py` lê a planilha Ford (`vin_share_Desafio_02.xlsx`), amostra 300 VINs, gera PII sintética (CPF/nome/email/telefone determinísticos por VIN), classifica via a mesma lógica do `MlService` Java e produz um SQL Flyway pronto.
+
+Uso básico (output em `./output/V3__seed_real_data.sql`):
+
+```bash
+APP_CRYPTO_KEY=<base64-32-bytes> python scripts/build_seed.py
+```
+
+Apontando direto pra pasta de migrations do repo SOA (recomendado pra atualizar o backend):
+
+```bash
+APP_CRYPTO_KEY=<mesma-do-backend> \
+  python scripts/build_seed.py \
+    data/vin_share_Desafio_02.xlsx \
+    300 \
+    ../challenge-SOA/src/main/resources/db/migration/V3__seed_real_data.sql
+```
+
+**Importante:** a `APP_CRYPTO_KEY` deve ser a mesma chave configurada no `application.yml` do backend Java. Email e telefone são criptografados com AES-256-GCM no formato compatível com o `EncryptedStringConverter` — chave diferente = decriptação falha ao ler os clientes.
 
 ## Anti-leakage — onde está provado
 
