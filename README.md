@@ -78,7 +78,7 @@ Tempo de execução completa: **~5-15 min** (KMeans + GridSearchCV em ~4k client
 
 ### Parte 3 — Leitura executiva
 
-Seção 20 do notebook. Resumo do perfis, prioridade de retenção, performance do modelo D0, e **pipeline operacional completo** mostrando como o modelo se integra ao backend `PrevioPLS/` (Spring Boot) + app mobile `PrevioPLS-Mobile/` (React Native).
+Seção 20 do notebook. Resumo do perfis, prioridade de retenção, performance do modelo D0, e **pipeline operacional completo** mostrando como o modelo se integra ao backend [`challenge-SOA`](https://github.com/Lynnbrosa/challenge-SOA) (Spring Boot) + app mobile [`challenge-Mobile`](https://github.com/Lynnbrosa/challenge-Mobile) (React Native).
 
 ## Regenerar o notebook
 
@@ -125,7 +125,7 @@ O notebook documenta a regra inviolável em 3 pontos:
 
 | Saída do notebook                   | Quem consome                                                                              |
 |-------------------------------------|------------------------------------------------------------------------------------------|
-| `ml_model.pkl` (joblib)             | `MlService.classificar()` em `PrevioPLS/` (Spring Boot) — substitui o stub SHA-256       |
+| `ml_model.pkl` (joblib)             | `MlService.classificar()` em [`challenge-SOA`](https://github.com/Lynnbrosa/challenge-SOA) (Spring Boot) — substitui o stub SHA-256 |
 | Mapeamento `cluster_id → persona`   | `MlService.scriptParaPerfil()` (já tem os scripts comerciais por perfil)                  |
 | Estratégia por perfil (seção 12)    | App mobile `PrevioPLS-Mobile/` mostra o script + sugestão na visão 360 do lead             |
 | Métricas de retenção                | KPIs do produto (Conversão de Risco, VIN Share, Engajamento Operacional)                  |
